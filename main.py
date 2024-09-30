@@ -10,7 +10,7 @@ import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 
-print("Sniping Bot application started.")
+print("Discord-Don application started.")
 
 # Needed for lists of members
 intents = discord.Intents.all()
