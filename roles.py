@@ -32,6 +32,13 @@ class RoleDB:
             \tis_flex: {self.is_flex}
             \tis_deleted: {self.is_deleted}
         """
+    
+    def shorthand_str(self) -> str:
+        return f"{self.id}: {self.role_name}"
+    
+    def longhand_str(self) -> str:
+        return f"""{self.role_name}\n\tId: {self.id}\n\tTeam: {self.team_name}{"\n\tKilling" if self.is_killing else ""}{"\n\tFlex" if self.is_flex else ""}\n\t{self.role_description}
+        """
 
     def database_gatekeeping(self):
         """Does a check to make sure all the values being inserted into the database are valid.
