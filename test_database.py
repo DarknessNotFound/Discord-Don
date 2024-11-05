@@ -1,7 +1,6 @@
 import unittest
 import database as db
 
-
 class TestDatabase(unittest.TestCase):
     def test_database_creation(self):
         """
