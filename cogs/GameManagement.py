@@ -2,6 +2,13 @@
 import discord
 from discord.ext import commands
 import Game_CoreLoop
+from roles import RoleDB
+from random import shuffle
+
+# Temporary roles for Thursday's test.
+townie_role_tmp = RoleDB(role_name="Townie", role_description="Trying to survive and vote out all killing roles")
+mafia_role_tmp = RoleDB(role_name="Mafia", role_description="Trying to kill all players that aren't mafia.")
+sheriff_role_tmp = RoleDB(role_name="Sheriff", role_description="Has a gun with a single bullet that can be shot at any time. If the guy shot was a killing role, then you survive. If the guy shot was innocent, you die as well.")
 
 class GameManagement(commands.Cog):
 
@@ -70,7 +77,7 @@ class GameManagement(commands.Cog):
     # Ends the game, and clears the players and roles.
     @commands.command(name='end_game', help='Ends the current game.')
     async def end_game(self, ctx):
-        if not self.game_active:
+        if not self.GI and self.GI.GameStarted:
             await ctx.send("No game is currently active.")
         else:
             self.GI.EndGame()

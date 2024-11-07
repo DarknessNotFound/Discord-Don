@@ -9,6 +9,7 @@ import asyncio
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
+from database import CREATE_DATABASE
 
 print("Discord-Don application started.")
 
@@ -27,6 +28,8 @@ bot = commands.Bot(command_prefix='>>', intents=intents, case_insensitive=True)
 # Prints a message to say it connected successfully
 # NOTE: Sometimes takes a second to trigger and send msg
 
+print("Creating the Database")
+CREATE_DATABASE()
 
 @bot.event
 async def on_ready():

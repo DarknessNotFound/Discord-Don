@@ -35,7 +35,7 @@ def CREATE_DATABASE():
         print(f"CRITICAL ERROR -- {FILE_NAME} -- CREATE_DATABASE -- {ex}")
         return False
 
-def UPSERT_ROLE(r: RoleDB):
+def UPSERT_ROLE(r: RoleDB) -> int | None:
     try:
         conn = sqlite3.Connection(FILE_PATH, isolation_level=ISOLATION_LEVEL)
         sql = f"""
@@ -60,20 +60,22 @@ def UPSERT_ROLE(r: RoleDB):
         print(f"ERROR -- {FILE_NAME} -- UPSERT_ROLE -- SQLITE3 Error")
         print(f"Error Code: {er.sqlite_errorcode}")
         print(f"Error Name: {er.sqlite_errorname}")
+    except TypeError as ex:
+        print(f"TYPE ERROR -- {FILE_NAME} -- UPSERT_ROLE -- {ex}")
     except Exception as ex:
         # LOG
         print(f"ERROR -- {FILE_NAME} -- UPSERT_ROLE -- {ex}")
 
 
-def SELECT_ROLE(id: int) -> RoleDB:
+def SELECT_ROLE(id: int, server_id: str) -> RoleDB | None:
     try:
         conn = sqlite3.Connection(FILE_PATH, isolation_level=ISOLATION_LEVEL)
         sql = f"""
             SELECT id, server_id, team_name, role_name, role_description, is_killing, is_flex, is_deleted
             FROM {T_ROLE_INFO}
-            WHERE id=?;
+            WHERE id=? and server_id=?;
         """
-        cur = conn.execute(sql, (id,))
+        cur = conn.execute(sql, (id, server_id))
         result = cur.fetchone()
         return RoleDB(*result)
     except sqlite3.Error as er:
@@ -89,9 +91,9 @@ def SELECT_ROLES(server_id: int = None) -> list[RoleDB]:
         conn = sqlite3.Connection(FILE_PATH, isolation_level=ISOLATION_LEVEL)
         if server_id is not None:
             sql = f"""
-                SELECT id, server_id, team_name, role_name, role_description, is_killing, is_flex, is_deleted
+                SELECT id, server_id, team_name, role_name, role_description, is_killing, is_flex
                 FROM {T_ROLE_INFO}
-                WHERE server_id=?;
+                WHERE server_id=? and is_deleted=0;
             """
             params = (server_id,)
         else:
@@ -148,11 +150,11 @@ def SELECT_ALL_ROLES_DELETED() -> list[RoleDB]:
         # LOG
         print(f"ERROR -- {FILE_NAME} -- SELECT_ROLES -- {ex}")
 
-def DELETE_ROLE(id: int = None) -> list[RoleDB]:
+def DELETE_ROLE(id: int = None, server_id: str = None) -> list[RoleDB]:
     try:
         conn = sqlite3.Connection(FILE_PATH, isolation_level=ISOLATION_LEVEL)
-        sql = f"UPDATE {T_ROLE_INFO} SET is_deleted=1 WHERE Id=?;"
-        params = (id,)
+        sql = f"UPDATE {T_ROLE_INFO} SET is_deleted=1 WHERE Id=? AND server_id=?;"
+        params = (id,server_id)
 
         conn.execute(sql, params)
         conn.commit()
