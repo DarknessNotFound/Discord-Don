@@ -1,44 +1,71 @@
 # GameManagement.py
 import discord
 from discord.ext import commands
+import Game_CoreLoop
 
 class GameManagement(commands.Cog):
+
+    GI = None
+
     def __init__(self, bot):
         self.bot = bot
-        self.players = []  # List to store players who join the game
-        self.roles = {}  # Dictionary to assign roles to players
-        self.game_active = False  # Flag to track if a game is active
     
-    # Starts the game and allows players to join if they're not active
+    #Creates a GameInstance object if none exist, 
+    @commands.command(name='create_game', help='Creates a new game if one is not already active.')
+    async def create_game(self, ctx):
+        if (self.GI):
+            await ctx.send("A game has already been created for this Discord.")
+        else:
+            self.GI = Game_CoreLoop.GameInstance
+            self.GI.AddPlayer(ctx.author.user.name)
+
+    
+    #Starts game provided the GI exists, and the caller is one of the players.
     @commands.command(name='start_game', help='Starts a new game if one is not already active.')
     async def start_game(self, ctx):
-        if self.game_active:
-            await ctx.send("A game is already in progress! :(")
+        if (self.GI): #Check if we have a valid GameInstance to join.
+            if(ctx.name in self.GI.Players): #Check that the caller is actually in said game.
+                await ctx.send("Game starting! You should recieve your roles shortly.")
+                self.GI.StartGame()
+            else:
+                await ctx.send("You are currently not in the current game. Use >>join_game to hop in!")
         else:
-            self.game_active = True
-            self.players.clear()
-            self.roles.clear()
-            await ctx.send("The game has started! Let's have fun! Use `>>join_game` to join.")
+            await ctx.send("Use create_game to create a lobby that other players can join, then start the game when you're ready!")
 
-    # Allows players to join a active game
+    # Allows players to join a active game or waiting lobby
     @commands.command(name='join_game', help='Join the active game.')
     async def join_game(self, ctx):
-        if not self.game_active:
-            await ctx.send("There is no active game to join. Use `>>start_game` to start one.")
-        elif ctx.author in self.players:
-            await ctx.send(f"{ctx.author.mention}, you are already in the game!")
-        else:
-            self.players.append(ctx.author)
-            await ctx.send(f"{ctx.author.mention} has joined the game!")
+        if (self.GI): #check if GI is valid
+            if (ctx.name in self.GI.Players): #Check if join is duplicate
+                await ctx.send("You've already joined the game.")
+            else:
+                self.GI.AddPlayer(ctx.author)
+                await ctx.send(f"{ctx.author} has joined the game.")                
+                if (self.GI.GameStarted): #check if GI has started.
+                    self.GI.KillPlayer(ctx.author)
+                    await ctx.send("Game in progress, you will respawn next game. Sit tight!")
 
-    # Allows players tp leave the game
+    # Allows players to leave the game
     @commands.command(name='leave_game', help='Leave the current game.')
     async def leave_game(self, ctx):
-        if ctx.author in self.players:
-            self.players.remove(ctx.author)
-            await ctx.send(f"{ctx.author.mention} has left the game.")
+        if(self.GI):
+            if(ctx.author in self.GI.Players):
+                self.GI.RemovePlayer(ctx.author)
+                await ctx.send(f"{ctx.author} has left the game.")
+                if(not self.GI.Players.len()):
+                    self.break_lobby()
+            else:
+                await ctx.send("You aren't in an active game.")
         else:
-            await ctx.send(f"{ctx.author.mention}, you are not in the game.")
+            await ctx.send("There isn't an active game running.")
+    
+    #Player can report that they are dead to the bot
+    @commands.command(name = 'dead', help = 'Report your death to the GM. \n Use this if you are sent to the ghost box.')
+    async def kill_player(self, ctx):
+        if (self.GI): #check if GI is valid
+            if (ctx.author in self.GI.Players): #Check if player exists in player roster.
+                self.GI.KillPlayer(ctx.author)
+            
 
     # Ends the game, and clears the players and roles.
     @commands.command(name='end_game', help='Ends the current game.')
@@ -46,10 +73,22 @@ class GameManagement(commands.Cog):
         if not self.game_active:
             await ctx.send("No game is currently active.")
         else:
-            self.game_active = False
-            self.players.clear()
-            self.roles.clear()
-            await ctx.send("The game has ended. Good game friends! :)")
+            self.GI.EndGame()
+            await ctx.send(self.GI.EchoStats())
+
+    #Mainly for testing, allow user to display the lobby names.
+    @commands.command(name='show_lobby', help = 'Displays all players currently joined to this game.')
+    async def show_lobby(self,ctx):
+        if self.GI:
+            lobbymsg = "Current Players: \n"
+            for player in self.GI.Players:
+                lobbymsg = lobbymsg + player.PlayerName + "\n"
+            await ctx.send(lobbymsg)
+    
+    #Breaks lobby, completely disbanding the group and erasing the GameInstance.
+    @commands.command(name= 'break_lobby', help = 'Disbands lobby for all players. Lobbies will automatically disband, \n following all players leaving.')
+    async def break_lobby(self):
+        self.GI = None
     
     # Thanks the user, spread the love!
     @commands.command(name='thanks', help='Thank the bot and receive a response!')
