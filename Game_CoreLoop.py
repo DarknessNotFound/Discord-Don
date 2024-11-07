@@ -78,7 +78,7 @@ class GameInstance:
     def KillPlayer(self, killedPlayer):
         for player in self.Players:
             if player.PlayerName == killedPlayer:
-                player.PlayerState == 'Dead'
+                player.PlayerState = 'Dead'
                 break
         self.AreKillersAlive()
 
@@ -96,5 +96,5 @@ class GameInstance:
     def EchoStats(self):
         statmsg = "Game Ended!"
         for Player in self.Players:
-            statmsg = statmsg + Player.PlayerName + " was a " + Player.PlayerRole + "\n"
+            statmsg = statmsg + Player.PlayerName + " was a " + Player.PlayerRole.RoleName + "\n"
         return statmsg
