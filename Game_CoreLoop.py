@@ -17,10 +17,10 @@ class GameInstance:
         if (len(self.Roles)):
             random.shuffle(self.Players) #Shuffle the players preemptively
             
-            AssignedRoles = [Game_PlayerLogic.Role]
-            MafiaRoles = [Game_PlayerLogic.Role]
-            FlexRoles = [Game_PlayerLogic.Role]
-            InnocentRoles = [Game_PlayerLogic.Role]
+            AssignedRoles = []
+            MafiaRoles = []
+            FlexRoles = []
+            InnocentRoles = []
             
             #switch case to handle role separation because why not.
             for role in self.Roles:
