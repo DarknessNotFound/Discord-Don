@@ -63,12 +63,26 @@ class GameInstance:
                 each.PlayerRole = AssignedRoles[self.Players.index(each)]
                 each.PlayerState = "Alive"        
 
-
     def StartGame(self):
         self.AssignRoles()
         self.GameStarted = True
-        return    
+        return None
 
+    def IsPlayerJoined(self, author) -> bool:
+        """Checks if a player has already joined the 
+
+        Args:
+            author (ctx.author): The ctx.author from Discord.
+
+        Returns:
+            bool: True if the ctx.author exists in the players list.
+        """
+        result = False
+        name = author.name
+        for p in self.Players:
+            if p.PlayerName == name:
+                result = True
+        return result
 
     def CheckTeamCounts(self):
         killers = 0
@@ -87,10 +101,15 @@ class GameInstance:
             return 2
         return 0
 
-    def AddPlayer(self, newPlayer):
-        self.Players.append(Game_PlayerLogic.RoledPlayer(newPlayer.name))
+    def AddAuthor(self, author):
+        """Adds the author of a discord command to the player list. They spawn in dead if the game is running.
+
+        Args:
+            author (ctx.author): The author who sent the message
+        """
+        self.Players.append(Game_PlayerLogic.RoledPlayer(author.name, author.id))
         if(self.GameStarted):
-            self.KillPlayer(self,newPlayer)
+            self.KillPlayer(self, author)
 
     def KillPlayer(self, killedPlayer):
         for player in self.Players:
@@ -100,7 +119,7 @@ class GameInstance:
         self.CheckTeamCounts()
 
     def RemovePlayer(self,RemovedPlayer):
-        self.KillPlayer(RemovedPlayer.name)
+        self.KillPlayer(RemovedPlayer)
         for player in self.Players:
             if player.PlayerName == RemovedPlayer.name:
                 self.Players.remove(player)

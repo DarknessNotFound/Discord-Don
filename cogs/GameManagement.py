@@ -27,7 +27,7 @@ class GameManagement(commands.Cog):
                 await ctx.send("A game has already been created for this Discord.")
             else:
                 self.GI = Game_CoreLoop.GameInstance()
-                self.GI.AddPlayer(ctx.author.name)
+                self.GI.AddAuthor(ctx.author)
                 await ctx.send("A game has been created.")
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- create_game -- {ex}")
@@ -38,9 +38,18 @@ class GameManagement(commands.Cog):
     async def start_game(self, ctx):
         try:
             if (self.GI): #Check if we have a valid GameInstance to join.
-                if(ctx.author.name in self.GI.Players): #Check that the caller is actually in said game.
+                if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     await ctx.send("Game starting! You should recieve your roles shortly.")
                     self.GI.StartGame()
+                    num_players = len(self.GI.Players)
+                    
+                    for player in self.GI.Players:
+                        discord_id = player.DiscordId
+                        print(f"Player: {discord_id}")
+                        user = await self.bot.fetch_user(discord_id)
+                        msg = player.PlayerRole.msg()
+                        await user.send(msg)
+
                 else:
                     await ctx.send("You are currently not in the current game. Use >>join_game to hop in!")
             else:
@@ -54,10 +63,10 @@ class GameManagement(commands.Cog):
     async def join(self, ctx):
         try:
             if (self.GI): #check if GI is valid
-                if (ctx.author.name in self.GI.Players): #Check if join is duplicate
+                if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     await ctx.send("You've already joined the game.")
                 else:
-                    self.GI.AddPlayer(ctx.author)
+                    self.GI.AddAuthor(ctx.author)
                     await ctx.send(f"{ctx.author.mention} has joined the game.")              
                     if (self.GI.GameStarted): #check if GI has started.
                         self.GI.KillPlayer(ctx.author)
@@ -73,11 +82,11 @@ class GameManagement(commands.Cog):
     async def leave(self, ctx):
         try:
             if(self.GI):
-                if(ctx.author in self.GI.Players):
+                if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     self.GI.RemovePlayer(ctx.author)
-                    await ctx.send(f"{ctx.author.name} has left the game.")
-                    if(not len(self.GI.Players)):
-                        self.break_lobby()
+                    await ctx.send(f"{ctx.author.mention} has left the game.")
+                    if len(self.GI.Players) == 0:
+                        await self.break_lobby(ctx)
                 else:
                     await ctx.send("You aren't in an active game.")
             else:
@@ -90,7 +99,7 @@ class GameManagement(commands.Cog):
     async def kill_player(self, ctx):
         try:
             if (self.GI): #check if GI is valid
-                if (ctx.author in self.GI.Players): #Check if player exists in player roster.
+                if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     self.GI.KillPlayer(ctx.author)
                     await ctx.send(f"The uhhh.... \"{ctx.author.mention}\" has been killed.")
                 else:
@@ -105,7 +114,7 @@ class GameManagement(commands.Cog):
             if not self.GI and self.GI.GameStarted:
                 await ctx.send("No game is currently active.")
             else:
-                self.GI.EndGame()
+                self.GI.EndGame("Winners winner chicken dinner")
                 await ctx.send(self.GI.EchoStats())
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- end_game -- {ex}")
