@@ -85,7 +85,7 @@ class GameManagement(commands.Cog):
 
     #Mainly for testing, allow user to display the lobby names.
     @commands.command(name='show_lobby', help = 'Displays all players currently joined to this game.')
-    async def show_lobby(self,ctx):
+    async def show_lobby(self, ctx):
         if self.GI:
             lobbymsg = "Current Players: \n"
             for player in self.GI.Players:
@@ -94,8 +94,9 @@ class GameManagement(commands.Cog):
     
     #Breaks lobby, completely disbanding the group and erasing the GameInstance.
     @commands.command(name= 'break_lobby', help = 'Disbands lobby for all players. Lobbies will automatically disband, \n following all players leaving.')
-    async def break_lobby(self):
+    async def break_lobby(self, ctx):
         self.GI = None
+        await ctx.send("Lobby be broke.")
     
     # Thanks the user, spread the love!
     @commands.command(name='thanks', help='Thank the bot and receive a response!')
