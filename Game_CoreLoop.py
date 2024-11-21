@@ -86,7 +86,7 @@ class GameInstance:
             return 2
         return 0
 
-    def AddPlayer(self,newPlayer):
+    def AddPlayer(self, newPlayer):
         self.Players.append(Game_PlayerLogic.RoledPlayer(newPlayer))
         if(self.GameStarted):
             self.KillPlayer(self,newPlayer)

@@ -27,7 +27,7 @@ class GameManagement(commands.Cog):
                 await ctx.send("A game has already been created for this Discord.")
             else:
                 self.GI = Game_CoreLoop.GameInstance()
-                self.GI.AddPlayer(ctx.author.user.name)
+                self.GI.AddPlayer(ctx.author.name)
                 await ctx.send("A game has been created.")
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- create_game -- {ex}")
@@ -38,7 +38,7 @@ class GameManagement(commands.Cog):
     async def start_game(self, ctx):
         try:
             if (self.GI): #Check if we have a valid GameInstance to join.
-                if(ctx.name in self.GI.Players): #Check that the caller is actually in said game.
+                if(ctx.author.name in self.GI.Players): #Check that the caller is actually in said game.
                     await ctx.send("Game starting! You should recieve your roles shortly.")
                     self.GI.StartGame()
                 else:
@@ -48,19 +48,22 @@ class GameManagement(commands.Cog):
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- start_game -- {ex}")
 
+
     # Allows players to join a active game or waiting lobby
     @commands.command(name='join', help='Join the active game.')
     async def join(self, ctx):
         try:
             if (self.GI): #check if GI is valid
-                if (ctx.name in self.GI.Players): #Check if join is duplicate
+                if (ctx.author in self.GI.Players): #Check if join is duplicate
                     await ctx.send("You've already joined the game.")
                 else:
                     self.GI.AddPlayer(ctx.author)
-                    await ctx.send(f"{ctx.author} has joined the game.")                
+                    await ctx.send(f"{ctx.author.mention} has joined the game.")              
                     if (self.GI.GameStarted): #check if GI has started.
                         self.GI.KillPlayer(ctx.author)
                         await ctx.send("Game in progress, you will respawn next game. Sit tight!")
+            else:
+                await ctx.send("Game has not be created yet, please sit tight.")
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- join -- {ex}")
 
