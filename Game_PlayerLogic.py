@@ -15,6 +15,9 @@ class Role:
         self.RoleDescription = Desc
         self.RoleUnique = Unique
         self.Killer = Killer
+    
+    def msg(self):
+        return f"Role: {self.RoleName}\nTeam: {self.RoleTeam}\n{self.RoleDescription}"
 
 DefaultRoles = [
     Role("Mafia", "Mafia", "Kill the Innocent to Win.",False, True),
@@ -32,10 +35,12 @@ DefaultRoles = [
 class RoledPlayer:
 
     PlayerName = "Anon"
+    DiscordId = 1
     PlayerRole = Role
     PlayerState = "Dead"
     
-    def __init__(self, Name):
+    def __init__(self, Name: str, DiscordId: str):
         self.PlayerName = Name
+        self.DiscordId = DiscordId
 
 
