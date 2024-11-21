@@ -5,7 +5,7 @@ import math, random
 
 class GameInstance:
 
-    def __init__(self, Players: list[Game_PlayerLogic.RoledPlayer] = [], RoleList: list[Game_PlayerLogic.Role] = []):
+    def __init__(self, Players: list[Game_PlayerLogic.RoledPlayer] = [], RoleList = Game_PlayerLogic.DefaultRoles):
         self.Players = Players
         self.Roles = RoleList
         self.MafiaPercent= 0.25
