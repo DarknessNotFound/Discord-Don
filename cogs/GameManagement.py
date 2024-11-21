@@ -115,7 +115,7 @@ class GameManagement(commands.Cog):
                 await ctx.send("No game is currently active.")
             else:
                 self.GI.EndGame("Winners winner chicken dinner")
-                await ctx.send(self.GI.EchoStats())
+                await ctx.send(self.GI.EchoStats("TODO"))
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- end_game -- {ex}")
 
