@@ -54,7 +54,7 @@ class GameManagement(commands.Cog):
     async def join(self, ctx):
         try:
             if (self.GI): #check if GI is valid
-                if (ctx.author in self.GI.Players): #Check if join is duplicate
+                if (ctx.author.name in self.GI.Players): #Check if join is duplicate
                     await ctx.send("You've already joined the game.")
                 else:
                     self.GI.AddPlayer(ctx.author)
