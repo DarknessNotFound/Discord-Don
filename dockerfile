@@ -6,7 +6,7 @@ RUN pip install --upgrade pip
 RUN python3 -m pip install -U python-dotenv
 RUN python3 -m pip install -U discord.py
 
-RUN mkdir ./Databases
+RUN mkdir ./data
 RUN mkdir ./cogs
 COPY *.py ./
 COPY cogs/*.py ./cogs/
