@@ -87,21 +87,21 @@ class GameInstance:
         return 0
 
     def AddPlayer(self, newPlayer):
-        self.Players.append(Game_PlayerLogic.RoledPlayer(newPlayer))
+        self.Players.append(Game_PlayerLogic.RoledPlayer(newPlayer.name))
         if(self.GameStarted):
             self.KillPlayer(self,newPlayer)
 
     def KillPlayer(self, killedPlayer):
         for player in self.Players:
-            if player.PlayerName == killedPlayer:
+            if player.PlayerName == killedPlayer.name:
                 player.PlayerState = "Dead"
                 break
         self.CheckTeamCounts()
 
     def RemovePlayer(self,RemovedPlayer):
-        self.KillPlayer(RemovedPlayer)
+        self.KillPlayer(RemovedPlayer.name)
         for player in self.Players:
-            if player.PlayerName == RemovedPlayer:
+            if player.PlayerName == RemovedPlayer.name:
                 self.Players.remove(player)
                 break
 

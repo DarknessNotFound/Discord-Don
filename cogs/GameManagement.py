@@ -75,8 +75,8 @@ class GameManagement(commands.Cog):
             if(self.GI):
                 if(ctx.author in self.GI.Players):
                     self.GI.RemovePlayer(ctx.author)
-                    await ctx.send(f"{ctx.author} has left the game.")
-                    if(not self.GI.Players.len()):
+                    await ctx.send(f"{ctx.author.name} has left the game.")
+                    if(not len(self.GI.Players)):
                         self.break_lobby()
                 else:
                     await ctx.send("You aren't in an active game.")
