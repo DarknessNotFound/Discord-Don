@@ -85,20 +85,36 @@ class GameInstance:
         return result
 
     def CheckTeamCounts(self):
-        killers = 0
-
-        nonkillers = 0
+        TeamCounts = {"Living": 0,
+                      "Innocent": 0,
+                      "Mafia": 0}
         for Player in self.Players:
-            if Player.PlayerRole.Killer and Player.PlayerState == "Alive":
-                killers += 1
-            if Player.PlayerRole.RoleTeam == "Innocent" and Player.PlayerState == "Alive":
-                nonkillers += 1
-        if killers <= 0:
-            self.EndGame("The Innocent")
+            if Player.PlayerState == "Alive":
+                TeamCounts["Living"] += 1
+                if Player.PlayerRole.RoleTeam == "Flex":
+                    if Player.PlayerRole.RoleName in TeamCounts:
+                        TeamCounts[Player.PlayerRole.RoleName] += 1
+                    else:
+                        TeamCounts[Player.PlayerRole.RoleName] = 1
+                else:
+                    TeamCounts[Player.PlayerRole.RoleTeam] += 1
+        if TeamCounts["Living"] <=0: # In the weird event of everyone dying.
+            self.EndGame("No One")
             return 1
-        if nonkillers <= 0 or killers >= nonkillers:
-            self.EndGame("The Mafia")
-            return 2
+        for team, value in TeamCounts:
+            match team:
+                case "Living":
+                    break
+                case "Innocent":
+                    if value >= TeamCounts["Living"]: # If we only have innocents left...
+                        self.EndGame(team)
+                        return 1
+                    break
+                case _:
+                    if value >= (TeamCounts["Living"] / 2): #if this team has the majority of players remaining
+                        self.EndGame(team)
+                        return 1
+                    break        
         return 0
 
     def AddAuthor(self, author):
