@@ -26,13 +26,13 @@ class GameManagement(commands.Cog):
             if (self.GI):
                 await ctx.send("A game has already been created for this Discord.")
             else:
-                self.GI = Game_CoreLoop.GameInstance
+                self.GI = Game_CoreLoop.GameInstance()
                 self.GI.AddPlayer(ctx.author.user.name)
                 await ctx.send("A game has been created.")
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- create_game -- {ex}")
 
-    
+
     #Starts game provided the GI exists, and the caller is one of the players.
     @commands.command(name='start', help='Starts a new game if one is not already active.')
     async def start_game(self, ctx):
