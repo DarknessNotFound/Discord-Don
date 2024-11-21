@@ -25,6 +25,7 @@ class GameManagement(commands.Cog):
         else:
             self.GI = Game_CoreLoop.GameInstance
             self.GI.AddPlayer(ctx.author.user.name)
+            await ctx.send("A game has been created.")
 
     
     #Starts game provided the GI exists, and the caller is one of the players.
@@ -72,6 +73,9 @@ class GameManagement(commands.Cog):
         if (self.GI): #check if GI is valid
             if (ctx.author in self.GI.Players): #Check if player exists in player roster.
                 self.GI.KillPlayer(ctx.author)
+                await ctx.send(f"The uhhh.... \"{ctx.author}\" has been killed.")
+            else:
+                await ctx.send(f"You aren't in this game dummy.")
             
 
     # Ends the game, and clears the players and roles.
