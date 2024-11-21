@@ -34,7 +34,7 @@ class GameInstance:
                     case "Innocent":
                         InnocentRoles.append(role)
             
-            md = int(max(2,math.floor(self.MafiaPercent * len(self.Players)))) #Mafia role distribution
+            md = int(max(1,math.floor(self.MafiaPercent * len(self.Players)))) #Mafia role distribution
             fd = int(math.floor(self.FlexPercent * len(self.Players))) #Flex role distribution
             
             #Tack on mafia roles first, because they're arguably most important.
@@ -86,6 +86,7 @@ class GameInstance:
 
     def CheckTeamCounts(self):
         killers = 0
+
         nonkillers = 0
         for Player in self.Players:
             if Player.PlayerRole.Killer and Player.PlayerState == "Alive":
@@ -126,8 +127,8 @@ class GameInstance:
 
     def EndGame(self, winner):
         self.GameStarted = False
-        self.EchoStats(winner)
-        return
+        msg = self.EchoStats(winner)
+        return msg
     
     def EchoStats(self, winner):
         statmsg = winner + " Wins!\n"
