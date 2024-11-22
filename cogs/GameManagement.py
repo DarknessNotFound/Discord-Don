@@ -40,7 +40,8 @@ class GameManagement(commands.Cog):
             if (self.GI): #Check if we have a valid GameInstance to join.
                 if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     await ctx.send("Game starting! You should recieve your roles shortly.")
-                    self.GI.StartGame()
+                    lok = self.GI.StartGame()
+                    await ctx.send(f"There are {lok} last of kind.")
                     num_players = len(self.GI.Players)
                     
                     mafia_team = []
@@ -135,7 +136,7 @@ class GameManagement(commands.Cog):
             if self.GI:
                 lobbymsg = "Current Players: \n"
                 for player in self.GI.Players:
-                    lobbymsg = lobbymsg + player.PlayerName + "\n"
+                    lobbymsg = lobbymsg + player.DisplayName + "\n"
                 await ctx.send(lobbymsg)
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- lobby -- {ex}")

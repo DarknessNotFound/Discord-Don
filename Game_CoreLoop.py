@@ -19,12 +19,12 @@ class GameInstance:
         if (len(self.Roles)):
             random.shuffle(self.Players) #Shuffle the players preemptively
             
+            lok_counter = 0
+
             AssignedRoles = []
             MafiaRoles = []
-            FlexRoles = []
+            FlexRoles: Game_PlayerLogic.Role = []
             InnocentRoles = []
-
-            Mafia_Team = []
             
             #switch case to handle role separation because why not.
             for role in self.Roles:
@@ -47,13 +47,17 @@ class GameInstance:
                 AssignedRoles.append(mrole)
                 if mrole.RoleUnique:
                     MafiaRoles.remove(mrole)
-            
+            lok_counter += 1
+
             #Add our flex roles, if any.
             for n in range(fd):
                 frole = random.choice(FlexRoles)
                 AssignedRoles.append(frole)
                 if frole.RoleUnique:
                     FlexRoles.remove(frole)
+                
+                if frole.RoleName == "Kannibal" or frole.RoleName == "Zombie":
+                    lok_counter += 1
             
             #Fill out the rest of the players with Innocent roles.
             for n in range(len(self.Players) - fd - md):
@@ -66,11 +70,13 @@ class GameInstance:
             for each in self.Players:
                 each.PlayerRole = AssignedRoles[self.Players.index(each)]
                 each.PlayerState = "Alive" 
+            
+            return lok_counter
 
     def StartGame(self):
-        self.AssignRoles()
+        num_lok = self.AssignRoles() # Returns number of lok (last of kind).
         self.GameStarted = True
-        return None
+        return num_lok
 
     def IsPlayerJoined(self, author) -> bool:
         """Checks if a player has already joined the 
@@ -162,6 +168,6 @@ class GameInstance:
     def EchoStats(self, winner):
         statmsg = winner + " Wins!\n"
         for Player in self.Players:
-            statmsg = statmsg + Player.PlayerName + " was a " + Player.PlayerRole.RoleName + " and is "+ Player.PlayerState + "\n"
+            statmsg = statmsg + Player.DisplayName + " was a " + Player.PlayerRole.RoleName + " and is "+ Player.PlayerState + "\n"
         print(statmsg) #Development Only
         return statmsg
