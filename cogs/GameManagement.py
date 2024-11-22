@@ -46,8 +46,10 @@ class GameManagement(commands.Cog):
                     
                     mafia_team = []
                     for player in self.GI.Players:
-                        if player.PlayerRole.RoleName == "Mafia" or player.PlayerRole.RoleName == "Janitor":
+                        if player.PlayerRole.RoleName == "Mafia":
                             mafia_team.append(player.DisplayName)
+                        if player.PlayerRole.RoleName == "Janitor":
+                            mafia_team.append(f"Janitor({player.DisplayName})")
 
                     for player in self.GI.Players:
                         discord_id = player.DiscordId
