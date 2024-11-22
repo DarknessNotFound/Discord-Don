@@ -104,7 +104,7 @@ class GameInstance:
             if TeamCounts["Living"] <=0: # In the weird event of everyone dying.
                 self.EndGame("No One")
                 return 1
-            for team, value in TeamCounts:
+            for team, value in TeamCounts.items():
                 match team:
                     case "Living":
                         break
@@ -129,13 +129,9 @@ class GameInstance:
             author (ctx.author): The author who sent the message
         """
         try:
-            print("AddAuthor_Here")
             self.Players.append(Game_PlayerLogic.RoledPlayer(author.name, author.id))
-            print("AddAuthor_Here")
             if(self.GameStarted):
-                print("AddAuthor_Here")
                 self.KillPlayer(author)
-                print("AddAuthor_Here")
         except Exception as ex:
             print(f"ERROR -- {FILE_NAME} -- AddAuthor -- {ex}")
 

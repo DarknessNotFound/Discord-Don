@@ -65,12 +65,9 @@ class GameManagement(commands.Cog):
                 if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     await ctx.send("You've already joined the game.")
                 else:
-                    print("Here1")
                     self.GI.AddAuthor(ctx.author)
-                    print("Here2")
                     await ctx.send(f"{ctx.author.mention} has joined the game.")              
                     if (self.GI.GameStarted): #check if GI has started.
-                        print("Here3")
                         await ctx.send("Game in progress, you will respawn next game. Sit tight!")
             else:
                 await ctx.send("Game has not be created yet, please sit tight.")
@@ -103,6 +100,8 @@ class GameManagement(commands.Cog):
                 if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     self.GI.KillPlayer(ctx.author)
                     await ctx.send(f"The uhhh.... \"{ctx.author.mention}\" has been killed.")
+                    if self.GI.CheckTeamCounts() == 1:
+                        await self.end_game(ctx)
                 else:
                     await ctx.send(f"You aren't in this game dummy.")
         except Exception as ex:
