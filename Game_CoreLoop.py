@@ -3,6 +3,8 @@
 import Game_PlayerLogic
 import math, random
 
+FILE_NAME = "Game_CoreLoop"
+
 class GameInstance:
 
     def __init__(self, Players: list[Game_PlayerLogic.RoledPlayer] = [], RoleList = Game_PlayerLogic.DefaultRoles):
@@ -85,36 +87,39 @@ class GameInstance:
         return result
 
     def CheckTeamCounts(self):
-        TeamCounts = {"Living": 0,
-                      "Innocent": 0,
-                      "Mafia": 0}
-        for Player in self.Players:
-            if Player.PlayerState == "Alive":
-                TeamCounts["Living"] += 1
-                if Player.PlayerRole.RoleTeam == "Flex":
-                    if Player.PlayerRole.RoleName in TeamCounts:
-                        TeamCounts[Player.PlayerRole.RoleName] += 1
+        try:
+            TeamCounts = {"Living": 0,
+                        "Innocent": 0,
+                        "Mafia": 0}
+            for Player in self.Players:
+                if Player.PlayerState == "Alive":
+                    TeamCounts["Living"] += 1
+                    if Player.PlayerRole.RoleTeam == "Flex":
+                        if Player.PlayerRole.RoleName in TeamCounts:
+                            TeamCounts[Player.PlayerRole.RoleName] += 1
+                        else:
+                            TeamCounts[Player.PlayerRole.RoleName] = 1
                     else:
-                        TeamCounts[Player.PlayerRole.RoleName] = 1
-                else:
-                    TeamCounts[Player.PlayerRole.RoleTeam] += 1
-        if TeamCounts["Living"] <=0: # In the weird event of everyone dying.
-            self.EndGame("No One")
-            return 1
-        for team, value in TeamCounts:
-            match team:
-                case "Living":
-                    break
-                case "Innocent":
-                    if value >= TeamCounts["Living"]: # If we only have innocents left...
-                        self.EndGame(team)
-                        return 1
-                    break
-                case _:
-                    if value >= (TeamCounts["Living"] / 2): #if this team has the majority of players remaining
-                        self.EndGame(team)
-                        return 1
-                    break        
+                        TeamCounts[Player.PlayerRole.RoleTeam] += 1
+            if TeamCounts["Living"] <=0: # In the weird event of everyone dying.
+                self.EndGame("No One")
+                return 1
+            for team, value in TeamCounts:
+                match team:
+                    case "Living":
+                        break
+                    case "Innocent":
+                        if value >= TeamCounts["Living"]: # If we only have innocents left...
+                            self.EndGame(team)
+                            return 1
+                        break
+                    case _:
+                        if value >= (TeamCounts["Living"] / 2): #if this team has the majority of players remaining
+                            self.EndGame(team)
+                            return 1
+                        break        
+        except Exception as ex:
+            print(f"ERROR -- {FILE_NAME} -- CheckTeamCounts -- {ex}")
         return 0
 
     def AddAuthor(self, author):
@@ -123,16 +128,26 @@ class GameInstance:
         Args:
             author (ctx.author): The author who sent the message
         """
-        self.Players.append(Game_PlayerLogic.RoledPlayer(author.name, author.id))
-        if(self.GameStarted):
-            self.KillPlayer(self, author)
+        try:
+            print("AddAuthor_Here")
+            self.Players.append(Game_PlayerLogic.RoledPlayer(author.name, author.id))
+            print("AddAuthor_Here")
+            if(self.GameStarted):
+                print("AddAuthor_Here")
+                self.KillPlayer(author)
+                print("AddAuthor_Here")
+        except Exception as ex:
+            print(f"ERROR -- {FILE_NAME} -- AddAuthor -- {ex}")
 
     def KillPlayer(self, killedPlayer):
-        for player in self.Players:
-            if player.PlayerName == killedPlayer.name:
-                player.PlayerState = "Dead"
-                break
-        self.CheckTeamCounts()
+        try:
+            for player in self.Players:
+                if player.PlayerName == killedPlayer.name:
+                    player.PlayerState = "Dead"
+                    break
+            self.CheckTeamCounts()
+        except Exception as ex:
+            print(f"ERROR -- {FILE_NAME} -- KillPlayer -- {ex}")
 
     def RemovePlayer(self,RemovedPlayer):
         self.KillPlayer(RemovedPlayer)

@@ -35,7 +35,7 @@ class GameManagement(commands.Cog):
 
     #Starts game provided the GI exists, and the caller is one of the players.
     @commands.command(name='start', help='Starts a new game if one is not already active.')
-    async def start_game(self, ctx):
+    async def start(self, ctx):
         try:
             if (self.GI): #Check if we have a valid GameInstance to join.
                 if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
@@ -45,7 +45,6 @@ class GameManagement(commands.Cog):
                     
                     for player in self.GI.Players:
                         discord_id = player.DiscordId
-                        print(f"Player: {discord_id}")
                         user = await self.bot.fetch_user(discord_id)
                         msg = player.PlayerRole.msg()
                         await user.send(msg)
@@ -66,10 +65,12 @@ class GameManagement(commands.Cog):
                 if self.GI.IsPlayerJoined(ctx.author): #Check that the caller is actually in said game.
                     await ctx.send("You've already joined the game.")
                 else:
+                    print("Here1")
                     self.GI.AddAuthor(ctx.author)
+                    print("Here2")
                     await ctx.send(f"{ctx.author.mention} has joined the game.")              
                     if (self.GI.GameStarted): #check if GI has started.
-                        self.GI.KillPlayer(ctx.author)
+                        print("Here3")
                         await ctx.send("Game in progress, you will respawn next game. Sit tight!")
             else:
                 await ctx.send("Game has not be created yet, please sit tight.")
