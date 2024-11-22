@@ -42,7 +42,6 @@ class GameManagement(commands.Cog):
                     await ctx.send("Game starting! You should recieve your roles shortly.")
                     lok = self.GI.StartGame()
                     await ctx.send(f"There are {lok} last of kind.")
-                    num_players = len(self.GI.Players)
                     
                     mafia_team = []
                     for player in self.GI.Players:
@@ -60,6 +59,8 @@ class GameManagement(commands.Cog):
                             for m in mafia_team:
                                 msg += f"{m}, "
                         await user.send(msg)
+                    
+                    await ctx.send("All Roles have been sent, you can begin.")
 
                 else:
                     await ctx.send("You are currently not in the current game. Use >>join_game to hop in!")
@@ -136,7 +137,7 @@ class GameManagement(commands.Cog):
     async def lobby(self, ctx):
         try:
             if self.GI:
-                lobbymsg = "Current Players: \n"
+                lobbymsg = f"Current Players: {len(self.GI.Players)}\n"
                 for player in self.GI.Players:
                     lobbymsg = lobbymsg + player.DisplayName + "\n"
                 await ctx.send(lobbymsg)
