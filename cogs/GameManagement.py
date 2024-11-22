@@ -43,10 +43,19 @@ class GameManagement(commands.Cog):
                     self.GI.StartGame()
                     num_players = len(self.GI.Players)
                     
+                    mafia_team = []
+                    for player in self.GI.Players:
+                        if player.PlayerRole.RoleName == "Mafia" or player.PlayerRole.RoleName == "Janitor":
+                            mafia_team.append(player.DisplayName)
+
                     for player in self.GI.Players:
                         discord_id = player.DiscordId
                         user = await self.bot.fetch_user(discord_id)
                         msg = player.PlayerRole.msg()
+                        if player.PlayerRole.RoleName == "Mafia":
+                            msg += "\nMafia Team: "
+                            for m in mafia_team:
+                                msg += f"{m}, "
                         await user.send(msg)
 
                 else:

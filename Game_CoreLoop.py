@@ -23,6 +23,8 @@ class GameInstance:
             MafiaRoles = []
             FlexRoles = []
             InnocentRoles = []
+
+            Mafia_Team = []
             
             #switch case to handle role separation because why not.
             for role in self.Roles:
@@ -63,7 +65,7 @@ class GameInstance:
             #Assign each player with a role, the two arrays should be of equal size outside of unplayable edge cases.
             for each in self.Players:
                 each.PlayerRole = AssignedRoles[self.Players.index(each)]
-                each.PlayerState = "Alive"        
+                each.PlayerState = "Alive" 
 
     def StartGame(self):
         self.AssignRoles()
@@ -129,7 +131,7 @@ class GameInstance:
             author (ctx.author): The author who sent the message
         """
         try:
-            self.Players.append(Game_PlayerLogic.RoledPlayer(author.name, author.id))
+            self.Players.append(Game_PlayerLogic.RoledPlayer(author.name, author.id, author.display_name))
             if(self.GameStarted):
                 self.KillPlayer(author)
         except Exception as ex:
