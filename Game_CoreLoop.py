@@ -167,7 +167,7 @@ class GameInstance:
     
     def EchoStats(self, winner):
         statmsg = winner + " Wins!\n"
-        statmsg = "Game Over!"
+        statmsg = "Game Over!\n"
         for Player in self.Players:
             statmsg = statmsg + Player.DisplayName + " was a " + Player.PlayerRole.RoleName + " and is "+ Player.PlayerState + "\n"
         print(statmsg) #Development Only
