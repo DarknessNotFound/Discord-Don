@@ -64,7 +64,7 @@ class GameInstance:
                 case 10:
                     amounts = [2, 2, 1, 2, 1, 2]
                 case 11:
-                    amounts = [2, 2, 2, 2, 1, 2]
+                    amounts = [2, 1, 2, 2, 1, 2]
                 case 12:
                     amounts = [2, 2, 2, 3, 1, 2]
                 case 13:
@@ -112,14 +112,14 @@ class GameInstance:
                     FlexRoles.remove(frole)
             
             #Add our Innocent roles, if any.
-            for n in range(amounts[3]):
+            for n in range(amounts[4]):
                 frole = random.choice(InnocentRoles)
                 AssignedRoles.append(frole)
                 if frole.RoleUnique:
                     FlexRoles.remove(frole)
 
             #Add our Basic Townie roles, if any.
-            for n in range(amounts[3]):
+            for n in range(amounts[5]):
                 frole = random.choice(TownieRoles)
                 AssignedRoles.append(frole)
                 if frole.RoleUnique:
