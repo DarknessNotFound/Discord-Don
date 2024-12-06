@@ -121,8 +121,8 @@ class GameManagement(commands.Cog):
             print(f"ERROR -- {FILE_NAME} -- kill_player -- {ex}")
 
     # Ends the game, and clears the players and roles.
-    @commands.command(name='end_game', help='Ends the current game.')
-    async def end_game(self, ctx):
+    @commands.command(name='end', help='Ends the current game.')
+    async def end(self, ctx):
         try:
             if not self.GI and self.GI.GameStarted:
                 await ctx.send("No game is currently active.")
