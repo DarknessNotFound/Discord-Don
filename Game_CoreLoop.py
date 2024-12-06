@@ -23,8 +23,11 @@ class GameInstance:
 
             AssignedRoles = []
             MafiaRoles = []
+            KillerRoles = []
             FlexRoles: Game_PlayerLogic.Role = []
             InnocentRoles = []
+            GoodInnocentRoles = []
+            TownieRoles = []
             
             #switch case to handle role separation because why not.
             for role in self.Roles:
@@ -32,39 +35,95 @@ class GameInstance:
                     case "Mafia":
                         MafiaRoles.append(role)
 
+                    case "Killer":
+                        KillerRoles.append(role)
+
                     case "Flex":
                         FlexRoles.append(role)
 
+                    case "GoodInnocent":
+                        GoodInnocentRoles.append(role)
+
                     case "Innocent":
                         InnocentRoles.append(role)
+
+                    case "Townie":
+                        TownieRoles.append(role)
             
-            md = int(max(1,math.floor(self.MafiaPercent * len(self.Players)))) #Mafia role distribution
-            fd = int(math.floor(self.FlexPercent * len(self.Players))) #Flex role distribution
+            # amounts = [Mafia, Killer, Flex, GoodInnocent, Innocent, Townie]
+            num_players = len(self.Players)
+            match num_players:
+                case 6:
+                    amounts = [2, 0, 1, 1, 1, 1]
+                case 7:
+                    amounts = [2, 0, 1, 2, 1, 1]
+                case 8:
+                    amounts = [2, 1, 1, 2, 1, 1]
+                case 9:
+                    amounts = [2, 1, 1, 2, 1, 2]
+                case 10:
+                    amounts = [2, 2, 1, 2, 1, 2]
+                case 11:
+                    amounts = [2, 2, 2, 2, 1, 2]
+                case 12:
+                    amounts = [2, 2, 2, 3, 1, 2]
+                case 13:
+                    amounts = [2, 2, 2, 3, 2, 2]
+                case 14:
+                    amounts = [2, 2, 3, 3, 2, 2]
+                case _:
+                    if num_players < 5:
+                        amounts = [2, 0, 0, 1, 0, max(num_players - 3, 0)]
+                    
+                    if num_players > 14:
+                        num_killers = ((num_players - 14) // 4) + 3
+                        num_townie = max(((num_players - 14 - num_killers)), 0) + 2
+                        amounts = [2, num_killers, 3, 3, 2, num_townie]
+                    
             
             #Tack on mafia roles first, because they're arguably most important.
-            for n in range(md):
+            for n in range(amounts[0]):
                 mrole = random.choice(MafiaRoles)
                 AssignedRoles.append(mrole)
                 if mrole.RoleUnique:
                     MafiaRoles.remove(mrole)
             lok_counter += 1
 
+            #Add our killer roles, if any.
+            for n in range(amounts[1]):
+                frole = random.choice(KillerRoles)
+                AssignedRoles.append(frole)
+                if frole.RoleUnique:
+                    FlexRoles.remove(frole)
+            lok_counter += amounts[1]
+
             #Add our flex roles, if any.
-            for n in range(fd):
+            for n in range(amounts[2]):
                 frole = random.choice(FlexRoles)
                 AssignedRoles.append(frole)
                 if frole.RoleUnique:
                     FlexRoles.remove(frole)
-                
-                if frole.RoleName == "Kannibal" or frole.RoleName == "Zombie":
-                    lok_counter += 1
+
+            #Add our GoodInnocent roles, if any.
+            for n in range(amounts[3]):
+                frole = random.choice(GoodInnocentRoles)
+                AssignedRoles.append(frole)
+                if frole.RoleUnique:
+                    FlexRoles.remove(frole)
             
-            #Fill out the rest of the players with Innocent roles.
-            for n in range(len(self.Players) - fd - md):
-                irole = random.choice(InnocentRoles)
-                AssignedRoles.append(irole)
-                if irole.RoleUnique:
-                    InnocentRoles.remove(irole)
+            #Add our Innocent roles, if any.
+            for n in range(amounts[3]):
+                frole = random.choice(InnocentRoles)
+                AssignedRoles.append(frole)
+                if frole.RoleUnique:
+                    FlexRoles.remove(frole)
+
+            #Add our Basic Townie roles, if any.
+            for n in range(amounts[3]):
+                frole = random.choice(TownieRoles)
+                AssignedRoles.append(frole)
+                if frole.RoleUnique:
+                    FlexRoles.remove(frole)
             
             #Assign each player with a role, the two arrays should be of equal size outside of unplayable edge cases.
             for each in self.Players:
